@@ -8,6 +8,13 @@ class TestConfigClass:
         config = Config(".env.test")
 
         assert config.get_value("TEST_KEY") == "TEST_VALUE"
+    
+    def test_set(self):
+        config = Config(".env.test")
+
+        config.set_value("TEST_KEY_2", "TEST_VALUE_2")
+
+        assert config.get_value("TEST_KEY_2") == "TEST_VALUE_2"
 
     def test_error(self):
         config = Config(".env.test")
