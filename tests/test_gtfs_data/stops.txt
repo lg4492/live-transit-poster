@@ -1,0 +1,6 @@
+stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,location_type,parent_station,wheelchair_boarding,level_id
+ST_A,Apples,,38,-77,91,1,,1,
+ST_B,Butter,,38,-77,91,1,,1,
+ST_C,Charlie,,38,-77,91,1,,1,
+ST_D,Duff,,38,-77,91,1,,1,
+ST_E,Edward,,38,-77,91,1,,1,

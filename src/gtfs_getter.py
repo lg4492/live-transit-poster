@@ -1,9 +1,13 @@
 from config import Config
-from gtfs_canonical_validator import CanonicalValidator
+import zipfile
 import requests
+import os
 
 
 class GTFSGetter:
+    # TODO: Add GTFS validation, skipping errors that we can
+    # work with
+
     def __init__(self, config: Config):
         self.api_key = config.get_value("API_KEY")
         self.gtfs_url = config.get_value("GTFS_URL")
@@ -17,15 +21,17 @@ class GTFSGetter:
         with open(file_path, "wb") as file:
             file.write(response.content)
 
+    def _unzip_gtfs_zip(self, file_path, folder_name):
+        # Open the zip file in read mode
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            # Extract all contents into the specified directory
+            zip_ref.extractall(folder_name)
 
-    def _validate_gtfs_zip(self, file_path):
-        canonical_validator = CanonicalValidator(zip_file=file_path)
+    def _delete_gtfs_zip(self, file_path):
+        os.remove(file_path)
 
-        report = canonical_validator.validate()
-        print(report)
-
-    def download_and_validate_gtfs(self, file_path):
+    def get_gtfs_files(self, file_path, folder_name):
         self._get_gtfs_zip(file_path)
-        self._validate_gtfs_zip(file_path)
-
+        self._unzip_gtfs_zip(file_path, folder_name)
+        self._delete_gtfs_zip(file_path)
 

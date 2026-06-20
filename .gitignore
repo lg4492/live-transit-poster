@@ -220,3 +220,6 @@ __marimo__/
 
 # GTFS zip file
 *.zip
+
+# unzipped GTFS file
+schedule/
