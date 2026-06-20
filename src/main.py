@@ -1,8 +1,10 @@
 from config import Config
 from gtfs_getter import GTFSGetter
 from schedule_builder import ScheduleBuilder
+from schedule_adjustment_builder import ScheduleAdjustmentBuilder
 from gtfsr_getter import GTFSRGetter
 from logging_setup import setup_logging
+from transit_schedule_adjustment import TransitScheduleAdjustment
 from pathlib import Path
 
 
@@ -23,8 +25,10 @@ def main():
     schedule_builder = ScheduleBuilder(config, PROJECT_ROOT_DIR / "schedule")
     schedule = schedule_builder.build_schedule()
 
+    # get schedule adjustments from gtfsr api
     gtfsr_getter = GTFSRGetter(config)
-    gtfsr_getter.get_trip_updates()
+    schedule_adjustment_builder = ScheduleAdjustmentBuilder(gtfsr_getter.get_trip_updates())
+    schedule_adjustment = schedule_adjustment_builder.build_schedule_adjustment()
 
 
 
