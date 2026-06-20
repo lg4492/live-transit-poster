@@ -1,3 +1,4 @@
+from src.config import Config
 from src.schedule_builder import _date_string_time_to_datetime, ScheduleBuilder
 from datetime import datetime, date, timedelta, time
 from freezegun import freeze_time
@@ -23,8 +24,10 @@ class TestScheduleBuilderClass:
     # past 24:00:00 on the previous day if they end after
     # the current time
     def test_schedule_builder_trips_past_24h(self):
+        config = Config(".env.test")
         with freeze_time("2026-06-19 01:00:00"):
-            sb = ScheduleBuilder(test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb = ScheduleBuilder(config, test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb.build_schedule()
 
             ret = sb.get_applicable_trips()
 
@@ -34,8 +37,11 @@ class TestScheduleBuilderClass:
     # test that schedule builder includes all trips from today 
     # after the current time
     def test_schedule_builder_todays_trips(self):
+        config = Config(".env.test")
+
         with freeze_time("2026-06-19 01:00:00"):
-            sb = ScheduleBuilder(test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb = ScheduleBuilder(config, test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb.build_schedule()
 
             ret = sb.get_applicable_trips()
 
@@ -44,9 +50,12 @@ class TestScheduleBuilderClass:
                 assert ret[trip] == "S_B"
 
     # test that schedule builder includes all trips from tomorrow
+    # (LOOK_AHEAD_DAYS = 1)
     def test_schedule_builder_tomorrows_trips(self):
+        config = Config(".env.test")
         with freeze_time("2026-06-19 01:00:00"):
-            sb = ScheduleBuilder(test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb = ScheduleBuilder(config, test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb.build_schedule()
 
             ret = sb.get_applicable_trips()
 
@@ -54,10 +63,12 @@ class TestScheduleBuilderClass:
                 assert trip in ret
                 assert ret[trip] == "S_C"
             
-        # test that schedule builder includes all trips from tomorrow
+    # test that schedule builder includes no extra trips
     def test_schedule_builder_no_extra_trips(self):
+        config = Config(".env.test")
         with freeze_time("2026-06-19 01:00:00"):
-            sb = ScheduleBuilder(test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb = ScheduleBuilder(config, test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb.build_schedule()
 
             ret = sb.get_applicable_trips()
 

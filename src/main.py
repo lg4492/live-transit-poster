@@ -1,6 +1,7 @@
 from config import Config
 from gtfs_getter import GTFSGetter
 from schedule_builder import ScheduleBuilder
+from gtfsr_getter import GTFSRGetter
 from logging_setup import setup_logging
 from pathlib import Path
 
@@ -18,7 +19,12 @@ def main():
     gtfs_getter = GTFSGetter(config)
     gtfs_getter.get_gtfs_files(PROJECT_ROOT_DIR / "schedule.zip",  PROJECT_ROOT_DIR / "schedule")
 
-    schedule_builder = ScheduleBuilder(PROJECT_ROOT_DIR / "schedule")
+    # get the transit schedule from the GTFS zip
+    schedule_builder = ScheduleBuilder(config, PROJECT_ROOT_DIR / "schedule")
+    schedule = schedule_builder.build_schedule()
+
+    gtfsr_getter = GTFSRGetter(config)
+    gtfsr_getter.get_trip_updates()
 
 
 

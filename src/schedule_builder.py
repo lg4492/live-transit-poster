@@ -1,4 +1,5 @@
 from datetime import datetime, date, timedelta, time
+from transit_schedule import TransitSchedule
 import csv
 
 STOP_INFO_FILE = "stops.txt"
@@ -27,13 +28,19 @@ def _date_string_time_to_datetime(date, time_string):
 
 
 class ScheduleBuilder:
-
-    def __init__(self, folder_path):
+    def __init__(self, config, folder_path):
         self._folder_path = folder_path
+        self._look_ahead_days = int(config.get_value("LOOK_AHEAD_DAYS"))
+
+    
+    def build_schedule(self):
         self._get_stops()
         self._get_applicable_service_ids()
         self._get_trips()
-        self._get_stop_times()
+        self._prune_past_trips()
+        return TransitSchedule(self._stop_names_to_ids,
+                        self._stop_ids,
+                        self._applicable_trip_service_ids)
 
 
     def _get_stops(self):
@@ -54,19 +61,19 @@ class ScheduleBuilder:
         # to work with the recommended format
         self._service_ids = []
         self._service_id_dates = {}
-        
+
         with open(self._folder_path/CALENDAR_DATES_FILE) as calendar_dates_file:
             dict_reader = csv.DictReader(calendar_dates_file)
 
             today = date.today()
-            tomorrow = today + timedelta(days=1)
+            upper_bound_date = today + timedelta(days=self._look_ahead_days)
             yesterday = today - timedelta(days=1)
 
             for row in dict_reader:
                 date_string = row['date']
                 date_object = datetime.strptime(date_string, "%Y%m%d").date()
 
-                if date_object == today or date_object == yesterday or date_object == tomorrow:
+                if date_object == today or date_object == yesterday or date_object <= upper_bound_date:
                     self._service_id_dates[row['service_id']] = date_object
                     self._service_ids.append(row['service_id'])
     
@@ -84,7 +91,7 @@ class ScheduleBuilder:
                     self._applicable_trip_service_ids[trip_id] = service_id
 
 
-    def _get_stop_times(self):
+    def _prune_past_trips(self):
         with open(self._folder_path/STOP_TIMES_INFO_FILE) as stop_times_info_file:
             dict_reader = csv.DictReader(stop_times_info_file)
 
@@ -92,7 +99,7 @@ class ScheduleBuilder:
             last_arrival_time = None
 
             # first, get first arrival, last arrival time
-            # for each applicable trip (trips from today, tomorrow, yesterday)
+            # for each applicable trip (trips from yesterday, today, up to look-ahead-days)
             for row in dict_reader:
                 # loop through stop times
                 trip_id = row['trip_id']
