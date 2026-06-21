@@ -38,9 +38,10 @@ class ScheduleBuilder:
         self._get_applicable_service_ids()
         self._get_trips()
         self._prune_past_trips()
+        self._get_stop_times()
         return TransitSchedule(self._stop_names_to_ids,
                         self._stop_ids,
-                        self._applicable_trip_service_ids)
+                        self._applicable_trip_stop_list)
 
 
     def _get_stops(self):
@@ -134,8 +135,36 @@ class ScheduleBuilder:
                 if trip_enddatetime < datetime.now():
                     self._applicable_trip_service_ids.pop(last_trip_id)
 
+    def _get_stop_times(self):
+        self._applicable_trip_stop_list = {}
+
+        # get arrival times of non-pruned trips in the schedule
+        with open(self._folder_path/STOP_TIMES_INFO_FILE) as stop_times_info_file:
+            dict_reader = csv.DictReader(stop_times_info_file)
+
+            for row in dict_reader:
+                trip_id = row['trip_id']
+
+                if trip_id in self._applicable_trip_service_ids:
+                    if not (trip_id in self._applicable_trip_stop_list):
+                        self._applicable_trip_stop_list[trip_id] = []
+
+                    arrival_time = row['arrival_time']
+                    arrival_date = self._service_id_dates[self._applicable_trip_service_ids[trip_id]]
+
+                    arrival_datetime = _date_string_time_to_datetime(arrival_date, arrival_time)
+
+                    # only add arrival times if arrival time is after current moment
+                    if arrival_datetime >= datetime.now():
+                        self._applicable_trip_stop_list[trip_id].append((row['stop_id'], arrival_datetime))
+
+
+
     def get_applicable_trips(self):
         return self._applicable_trip_service_ids
+    
+    def get_applicable_stop_times(self):
+        return self._applicable_trip_stop_list
 
 
 

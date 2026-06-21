@@ -73,3 +73,23 @@ class TestScheduleBuilderClass:
             ret = sb.get_applicable_trips()
 
             assert len(ret) == 11
+
+    def test_schedule_builder_stop_times(self):
+        config = Config(".env.test")
+        with freeze_time("2026-06-19 01:00:00"):
+            sb = ScheduleBuilder(config, test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb.build_schedule()
+
+            ret = sb.get_applicable_stop_times()
+
+            assert ret["T_5"][0][0] == "ST_A"
+
+    def test_schedule_builder_ignores_past_stops(self):
+        config = Config(".env.test")
+        with freeze_time("2026-06-19 02:01:30"):
+            sb = ScheduleBuilder(config, test_constants.PROJECT_ROOT_DIR / "tests" / "test_gtfs_data")
+            sb.build_schedule()
+
+            ret = sb.get_applicable_stop_times()
+
+            assert ret["T_5"][0][0] == "ST_C"
