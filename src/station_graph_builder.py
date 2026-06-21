@@ -16,19 +16,29 @@ class StationGraphBuilder:
 
         for trip in trips:
             last_stop = None
+            time_train_left_last_stop = None
             for tup in trips[trip]:
                 stop = tup[0]
-                arrival_time = tup[1]
+                arrival_time_this_stop = tup[1]
 
+                updated_arrival_time_this_stop = arrival_time_this_stop
 
-                if last_stop != None:
-                    updated_arrival_time = arrival_time
+                if last_stop != None:                    
                     if trip in adjustments and stop in adjustments[trip]:
-                        updated_arrival_time = adjustments[trip][stop]
+                        updated_arrival_time_this_stop = adjustments[trip][stop]
                     
-                    if updated_arrival_time >= datetime.now():
-                        self.station_graph.add_connection(last_stop, stop, updated_arrival_time)
+                    if updated_arrival_time_this_stop >= datetime.now():
+                        self.station_graph.add_connection(last_stop, 
+                                                          stop, 
+                                                          updated_arrival_time_this_stop, 
+                                                          time_train_left_last_stop)
+                
                 last_stop = stop
+
+                # assume trains leave as soon as they arrive
+                # (correct for WMATA) TODO change this
+                time_train_left_last_stop = updated_arrival_time_this_stop
+
         
         return self.station_graph
 

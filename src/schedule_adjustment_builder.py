@@ -22,6 +22,9 @@ class ScheduleAdjustmentBuilder:
                 stop_id = stop_update.stop_id
                 updated_arrival_time = stop_update.arrival.time
 
+                if updated_arrival_time == NO_ARRIVAL:
+                    updated_arrival_time = stop_update.departure.time
+                    
                 # only take into account arrival times, not
                 # delayed departures
                 if updated_arrival_time != NO_ARRIVAL:

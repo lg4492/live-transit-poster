@@ -31,7 +31,6 @@ def main():
     schedule_adjustment_builder = ScheduleAdjustmentBuilder(gtfsr_getter.get_trip_updates())
     schedule_adjustment = schedule_adjustment_builder.build_schedule_adjustment()
 
-
     station_graph_builder = StationGraphBuilder(schedule, schedule_adjustment)
     station_graph = station_graph_builder.build_station_graph()
 

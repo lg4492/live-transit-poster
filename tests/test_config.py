@@ -1,5 +1,4 @@
 import pytest
-import os
 from src.config import Config
 
 class TestConfigClass:
