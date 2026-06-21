@@ -153,10 +153,7 @@ class ScheduleBuilder:
                     arrival_date = self._service_id_dates[self._applicable_trip_service_ids[trip_id]]
 
                     arrival_datetime = _date_string_time_to_datetime(arrival_date, arrival_time)
-
-                    # only add arrival times if arrival time is after current moment
-                    if arrival_datetime >= datetime.now():
-                        self._applicable_trip_stop_list[trip_id].append((row['stop_id'], arrival_datetime))
+                    self._applicable_trip_stop_list[trip_id].append((row['stop_id'], arrival_datetime))
 
 
 

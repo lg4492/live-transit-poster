@@ -30,5 +30,5 @@ class ScheduleAdjustmentBuilder:
 
                     if updated_arrival_datetime >= datetime.now():
                         self._adjusted_stop_times_by_trip[trip_id][stop_id] = updated_arrival_datetime
-                        
+
         return TransitScheduleAdjustment(self._adjusted_stop_times_by_trip)

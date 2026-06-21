@@ -5,6 +5,7 @@ from schedule_adjustment_builder import ScheduleAdjustmentBuilder
 from gtfsr_getter import GTFSRGetter
 from logging_setup import setup_logging
 from transit_schedule_adjustment import TransitScheduleAdjustment
+from station_graph_builder import StationGraphBuilder
 from pathlib import Path
 
 
@@ -29,6 +30,14 @@ def main():
     gtfsr_getter = GTFSRGetter(config)
     schedule_adjustment_builder = ScheduleAdjustmentBuilder(gtfsr_getter.get_trip_updates())
     schedule_adjustment = schedule_adjustment_builder.build_schedule_adjustment()
+
+
+    station_graph_builder = StationGraphBuilder(schedule, schedule_adjustment)
+    station_graph = station_graph_builder.build_station_graph()
+
+    breakpoint()
+
+
 
 
 
