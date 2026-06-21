@@ -5,8 +5,9 @@ NO_ARRIVAL = 0
 
 
 class ScheduleAdjustmentBuilder:
-    def __init__(self, trip_updated_entities):
+    def __init__(self, trip_updated_entities, schedule):
         self.trip_updated_entities = trip_updated_entities
+        self._schedule = schedule
     
     # build a dict of trip updates by stop and trip
     def build_schedule_adjustment(self):
@@ -20,11 +21,14 @@ class ScheduleAdjustmentBuilder:
 
             for stop_update in entity.trip_update.stop_time_update:
                 stop_id = stop_update.stop_id
+
+                stop_id = self._schedule.get_parent_stop(stop_id)
+
                 updated_arrival_time = stop_update.arrival.time
 
                 if updated_arrival_time == NO_ARRIVAL:
                     updated_arrival_time = stop_update.departure.time
-                    
+
                 # only take into account arrival times, not
                 # delayed departures
                 if updated_arrival_time != NO_ARRIVAL:

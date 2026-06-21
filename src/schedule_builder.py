@@ -8,6 +8,7 @@ TRIPS_FILE = "trips.txt"
 STOP_TIMES_INFO_FILE = "stop_times.txt"
 
 STATION_LOCATION_TYPE = '1'
+BOARDING_AREA_LOCATION_TYPE = '4'
 
 
 def _date_string_time_to_datetime(date, time_string):
@@ -39,22 +40,30 @@ class ScheduleBuilder:
         self._get_trips()
         self._prune_past_trips()
         self._get_stop_times()
-        return TransitSchedule(self._stop_names_to_ids,
-                        self._stop_ids,
+        return TransitSchedule(self._tl_stop_names_to_ids,
+                        self._top_level_stop_ids,
+                        self._lower_level_stop_ids,
                         self._applicable_trip_stop_list)
 
 
     def _get_stops(self):
-        self._stop_names_to_ids = {}
-        self._stop_ids = []
+        self._top_level_stop_ids = []
+        self._tl_stop_names_to_ids = {}
+        self._lower_level_stop_ids = {}
 
         with open(self._folder_path/STOP_INFO_FILE) as stops_file:
             dict_reader = csv.DictReader(stops_file)
 
             for row in dict_reader:
                 if row['location_type'] == STATION_LOCATION_TYPE:
-                    self._stop_names_to_ids[row['stop_name']] = row['stop_id']
-                    self._stop_ids.append(row['stop_id'])
+                    self._tl_stop_names_to_ids[row['stop_name']] = row['stop_id']
+                    self._top_level_stop_ids.append(row['stop_id'])
+                elif row['location_type'] != BOARDING_AREA_LOCATION_TYPE:
+                    # non boarding areas have stations as parent station
+                    self._lower_level_stop_ids[row['stop_id']] = row['parent_station']
+                else:
+                    self._lower_level_stop_ids[row['stop_id']] = self._lower_level_stop_ids[row['parent_station']]
+
 
     def _get_applicable_service_ids(self):
         # TODO: This works for the "alternative" format for
@@ -153,7 +162,13 @@ class ScheduleBuilder:
                     arrival_date = self._service_id_dates[self._applicable_trip_service_ids[trip_id]]
 
                     arrival_datetime = _date_string_time_to_datetime(arrival_date, arrival_time)
-                    self._applicable_trip_stop_list[trip_id].append((row['stop_id'], arrival_datetime))
+                    
+                    # get the parent station of the stop id
+                    stop_id = row['stop_id']
+                    if stop_id in self._lower_level_stop_ids:
+                        stop_id = self._lower_level_stop_ids[stop_id]
+                    
+                    self._applicable_trip_stop_list[trip_id].append((stop_id, arrival_datetime))
 
 
 

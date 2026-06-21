@@ -14,16 +14,19 @@ class StationGraphBuilder:
         trips = self.schedule.get_applicable_trip_stop_list()
         adjustments = self.schedule_adjustment.get_adjusted_stop_times_by_trip()
 
+        # loop thorugh trips
         for trip in trips:
             last_stop = None
             time_train_left_last_stop = None
             for tup in trips[trip]:
+                # loop through stops on the trip
                 stop = tup[0]
                 arrival_time_this_stop = tup[1]
 
                 updated_arrival_time_this_stop = arrival_time_this_stop
 
-                if last_stop != None:                    
+                if last_stop != None:
+                    # adjust the arrival time if needed                    
                     if trip in adjustments and stop in adjustments[trip]:
                         updated_arrival_time_this_stop = adjustments[trip][stop]
                     
