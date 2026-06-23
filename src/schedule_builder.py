@@ -41,6 +41,7 @@ class ScheduleBuilder:
         self._prune_past_trips()
         self._get_stop_times()
         return TransitSchedule(self._tl_stop_names_to_ids,
+                        self._tl_stop_ids_to_names,
                         self._top_level_stop_ids,
                         self._lower_level_stop_ids,
                         self._applicable_trip_stop_list)
@@ -49,6 +50,7 @@ class ScheduleBuilder:
     def _get_stops(self):
         self._top_level_stop_ids = []
         self._tl_stop_names_to_ids = {}
+        self._tl_stop_ids_to_names = {}
         self._lower_level_stop_ids = {}
 
         with open(self._folder_path/STOP_INFO_FILE) as stops_file:
@@ -57,6 +59,7 @@ class ScheduleBuilder:
             for row in dict_reader:
                 if row['location_type'] == STATION_LOCATION_TYPE:
                     self._tl_stop_names_to_ids[row['stop_name']] = row['stop_id']
+                    self._tl_stop_ids_to_names[row['stop_id']] = row['stop_name']
                     self._top_level_stop_ids.append(row['stop_id'])
                 elif row['location_type'] != BOARDING_AREA_LOCATION_TYPE:
                     # non boarding areas have stations as parent station

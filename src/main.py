@@ -6,8 +6,9 @@ from gtfsr_getter import GTFSRGetter
 from logging_setup import setup_logging
 from transit_schedule_adjustment import TransitScheduleAdjustment
 from station_graph_builder import StationGraphBuilder
+from shortest_path_getter import ShortestPathGetter
 from pathlib import Path
-
+from datetime import datetime
 
 PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,11 +35,13 @@ def main():
     station_graph_builder = StationGraphBuilder(schedule, schedule_adjustment)
     station_graph = station_graph_builder.build_station_graph()
 
-    breakpoint()
+    home_station_id = schedule.get_stop_id("East Falls Church")
 
+    shortest_path_getter = ShortestPathGetter(station_graph, home_station_id)
+    shortest_path_getter.get_shortest_paths(datetime.now())
 
-
-
+    print(shortest_path_getter._station_shortest_times)
+    print(len(shortest_path_getter._station_shortest_times))
 
     
 

@@ -18,7 +18,7 @@ class TestStationGraph:
         # assume we walk up to station A at 12:00 AM, the next train
         # we take to B should be the one that leaves at 1:00 AM and
         # arrives at 1:30
-        (arr, dept) = station_graph.get_station("A").get_earliest_times_to_station_after("B", test_time)
+        (arr, dept) = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
 
         assert arr == arrival_time_at_B
         assert dept == departure_time_from_A
@@ -36,7 +36,7 @@ class TestStationGraph:
         with pytest.raises(LookupError):
             # assume we walk up to station A at 1:15 AM, we are not
             # able to get a train to station B
-            (arr, dept) = station_graph.get_station("A").get_earliest_times_to_station_after("B", test_time)
+            (arr, dept) = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
     
     def test_getting_earlier_connection(self):
         station_graph = StationGraph()
@@ -57,7 +57,7 @@ class TestStationGraph:
         # assume we walk up to station A at 12:00 AM, the next train
         # we take to B should be the one that leaves at 1:00 AM and
         # arrives at 1:30
-        (arr, dept) = station_graph.get_station("A").get_earliest_times_to_station_after("B", test_time)
+        (arr, dept) = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
 
         assert arr == arrival_time_at_B
         assert dept == departure_time_from_A
