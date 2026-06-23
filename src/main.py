@@ -41,7 +41,6 @@ def main():
     shortest_path_getter.get_shortest_paths(datetime.now())
 
     print(shortest_path_getter._station_shortest_times)
-    print(len(shortest_path_getter._station_shortest_times))
 
     
 

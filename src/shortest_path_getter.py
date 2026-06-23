@@ -27,8 +27,6 @@ class ShortestPathGetter:
                     if existing_time > earliest_arrival_at_connection:
                         self._station_shortest_times[connection_id] = earliest_arrival_at_connection
                         self.recursive_shortest_path(connection_station, earliest_arrival_at_connection, False)
-                    else:
-                        return
                 else:
                     self._station_shortest_times[connection_id] = earliest_arrival_at_connection
                     self.recursive_shortest_path(connection_station, earliest_arrival_at_connection, False)
