@@ -1,5 +1,6 @@
 from src.station_graph import Station, StationGraph
 from datetime import date, datetime, time
+from src.exceptions import NoTrainError
 import pytest
 
 class TestStationGraph:
@@ -18,10 +19,9 @@ class TestStationGraph:
         # assume we walk up to station A at 12:00 AM, the next train
         # we take to B should be the one that leaves at 1:00 AM and
         # arrives at 1:30
-        (arr, dept) = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
+        arr = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
 
         assert arr == arrival_time_at_B
-        assert dept == departure_time_from_A
     
     def test_non_existent_connection(self):
         station_graph = StationGraph()
@@ -33,10 +33,10 @@ class TestStationGraph:
 
         station_graph.add_connection("A", "B", arrival_time_at_B, departure_time_from_A)
 
-        with pytest.raises(LookupError):
+        with pytest.raises(NoTrainError):
             # assume we walk up to station A at 1:15 AM, we are not
             # able to get a train to station B
-            (arr, dept) = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
+            arr = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
     
     def test_getting_earlier_connection(self):
         station_graph = StationGraph()
@@ -57,7 +57,6 @@ class TestStationGraph:
         # assume we walk up to station A at 12:00 AM, the next train
         # we take to B should be the one that leaves at 1:00 AM and
         # arrives at 1:30
-        (arr, dept) = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
+        arr = station_graph.get_station("A").get_time_of_earliest_train_to_station_leaving_after("B", test_time)
 
         assert arr == arrival_time_at_B
-        assert dept == departure_time_from_A

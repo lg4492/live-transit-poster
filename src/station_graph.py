@@ -9,21 +9,17 @@ class Station:
 
     def add_connection(self, to_stop_id, arrival_time_to_stop, departure_time_this_stop, station_object):
         if to_stop_id in self.connections:
-            bisect.insort(self.connections[to_stop_id][1], (departure_time_this_stop, arrival_time_to_stop))
+            bisect.insort(self.connections[to_stop_id][1], (arrival_time_to_stop, departure_time_this_stop))
         else:
-            self.connections[to_stop_id] = (station_object, [(departure_time_this_stop, arrival_time_to_stop)])
+            self.connections[to_stop_id] = (station_object, [(arrival_time_to_stop, departure_time_this_stop)])
+
 
     def get_time_of_earliest_train_to_station_leaving_after(self, other_station, time):
         # get the train that arrives at station "other_station"
         # after time "time" that departs from this station also after 
         # time "time"
-        
-        index = bisect.bisect_right(self.connections[other_station][1], (time, time))
 
-        list_len = len(self.connections[other_station][1])
-
-        if index < list_len:
-            (dept, arr) = self.connections[other_station][1][index]
+        for (arr, dept) in self.connections[other_station][1]:
             if arr >= time and dept >= time:
                 return arr
         

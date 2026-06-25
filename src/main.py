@@ -40,9 +40,6 @@ def main():
     shortest_path_getter = ShortestPathGetter(station_graph, home_station_id)
     shortest_path_getter.get_shortest_paths(datetime.now())
 
-    print(shortest_path_getter._station_shortest_times)
-
-    
 
 
 # This guard ensures the code only runs if the file is executed directly
